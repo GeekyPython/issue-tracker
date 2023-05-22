@@ -69,10 +69,10 @@ module.exports = function (app) {
 
         if(!response)
         {
-          return res.status(404).send(`No entry with object id ${body._id}`)
+          return res.status(404).json({error: "Could not update", _id: issueId})
         }
 
-        res.status(200).json(response);
+        res.status(200).json({result: "successfully updated", _id: issueId});
       }
       catch(err)
       {
@@ -91,9 +91,9 @@ module.exports = function (app) {
 
         if(!response)
         {
-          return res.status(404).send(`No issue with id ${issueId}`);
+          return res.status(404).json({error: "Could not delete", _id: issueId});
         }
-        res.status(200).json(response);
+        res.status(200).json({result: "successfully deleted", _id: issueId});
       }
       catch(err)
       {
