@@ -54,6 +54,7 @@ module.exports = function (app) {
         delete changedContent._id;
         const date = new Date();
         body.updated_on = date.toISOString();
+        const issueId = body._id;
 
         //Removing empty entries in object that needs to be amended in DB
         for(const prop in changedContent)
@@ -65,6 +66,7 @@ module.exports = function (app) {
         }
     
         console.log(changedContent);
+
         const response = await User.findByIdAndUpdate(body._id, changedContent);
 
         if(!response)
