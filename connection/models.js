@@ -5,7 +5,7 @@ const UserSchema = new mongoose.Schema({
     issue_text: String,
     created_on: String,
     updated_on: String,
-    create_by: String,
+    created_by: String,
     assigned_to: String,
     open: Boolean,
     status_text: String
