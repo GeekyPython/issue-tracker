@@ -3,7 +3,8 @@ const User = require('../connection/models');
 const getAllIssues = async function (req, res){
     try
     {
-      const data = await User.find({});
+      const query = req.query;
+      const data = await User.find(query);
       res.status(200).json(data);
     }
     catch(err)
@@ -33,7 +34,7 @@ const addNewIssue = async function (req, res){
     catch(err)
     {
       console.log(err);
-      res.status(500).json({msg: err});
+      res.status(500).json({error: 'required field(s) missing'});
     }
 }
 
@@ -43,11 +44,10 @@ const editIssue = async function (req, res){
       const body = req.body;
       let changedContent = {...body};
       delete changedContent._id;
-
-      const date = new Date();
-      body.updated_on = date.toISOString();
-      
       const issueId = body._id;
+
+      //console.log("--------------------------------------------------------------")
+      //console.log(changedContent);
 
       //Removing empty entries in object that needs to be amended in DB
       for(const prop in changedContent)
@@ -58,10 +58,20 @@ const editIssue = async function (req, res){
         }
       }
 
+      if(Object.keys(changedContent).length === 0)
+      {
+        return res.send({ error: 'no update field(s) sent', '_id': issueId });
+      }
+
+      const date = new Date();
+      changedContent.updated_on = date.toISOString();
+      //console.log(changedContent);
+      //console.log("--------------------------------------------------------------")
       const response = await User.findByIdAndUpdate(body._id, changedContent);
+
       if(!response)
       {
-        return res.status(404).json({error: "Could not update", _id: issueId})
+        return res.status(404).json({error: "could not update", _id: issueId})
       }
       res.status(200).json({result: "successfully updated", _id: issueId});
     }
@@ -76,11 +86,16 @@ const deleteIssue = async function (req, res){
     try
     {
       const issueId = req.body._id;
+
+      if(!issueId)
+      {
+        return res.send({error: 'missing _id'});
+      }
       const response = await User.findByIdAndDelete(issueId);
 
       if(!response)
       {
-        return res.status(404).json({error: "Could not delete", _id: issueId});
+        return res.status(404).json({error: "could not delete", _id: issueId});
       }
       res.status(200).json({result: "successfully deleted", _id: issueId});
     }
